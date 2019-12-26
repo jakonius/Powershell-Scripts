@@ -1,0 +1,13 @@
+$VMWifi = 'VMWifi'
+$VMNetw = 'VMNetw'
+$VMName = Read-Host "Please enter the desired name for your VM"
+$user = Read-Host "Please enter your username:"
+$Install = C:\Users\$user\Downloads\ubuntu-18.04.3-desktop-amd64.iso
+New-VMSwitch -name "VMWifi" -AllowManagementOS $true -NetAdapterName 'Wi-Fi'
+New-VMSwitch -Name "VMNetw" -AllowManagementOS $true -NetAdapterName 'Ethernet'
+New-Item -Path C:\VMs\$VMName -ItemType Directory
+New-VM -Name $VMName -MemoryStartupBytes 8GB -Generation 2 -BootDevice VHD -NewVHDPath C:\VMs\$VMName.vhdx -NewVHDSizeBytes 40GB -path C:\VMs\ -SwitchName $VMWifi
+Add-VMScsiController -vmname $VMName
+Add-VMDvdDrive -VMName $VMName -ControllerNumber 1 -controllerlocation 0 -path $install
+$DVD = Get-VMDvdDrive -VMName $VMName
+Set-VMFirmware -VMName $VMName -FirstBootDevice $DVD
